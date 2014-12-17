@@ -26,10 +26,34 @@ score
   = lines:line* { return {lines: lines}; }
 
 line
-  = operation:operation variables:variable* ";\n" { return {operation: operation, variables: variables}; }
+  = terminator
+  / begin_instrument
+  / oscillator
+  / output
+  / end_instrument
+  / generated_function
+  / note
 
-operation
-  = letters:([A-Z][A-Z][A-Z]) " "* { return letters.join(""); }
+terminator
+  = operation:"TER" " " time:variable ";\n" { return {operation: operation, time:parseFloat(time)}; }
+
+begin_instrument
+  = operation:"INS" " " time:variable number:variable ";\n" { return {operation: operation, time:parseFloat(time), number:parseInt(number)}; }
+
+oscillator
+  = operation:"OSC" " " amplitude:variable frequency:variable output:variable stored_function:variable initial_value:variable ";\n" { return {operation: operation, amplitude: amplitude, frequency: frequency, output: output, stored_function: stored_function, initial_value: initial_value }; }
+
+output
+  = operation:"OUT" " " input:variable output:variable ";\n" { return {operation: operation, input: input, output: output }; }
+
+end_instrument
+  = operation:"END" " " ";\n" { return {operation: operation }; }
+
+generated_function
+  = operation:"GEN" " " time:variable subroutine_number:variable function_number:variable params:variable* ";\n" { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, params:params }; }
+
+note
+  = operation:"NOT" " " time:variable instrument_number:variable duration:variable params:variable* ";\n" { return { operation: operation, time: parseFloat(time), instrument_number: parseInt(instrument_number), duration: parseFloat(duration), params:params }; }
 
 variable
   = letters:[^ ;]+ " "* { return letters.join(""); }
