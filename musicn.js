@@ -65,25 +65,25 @@ Model.Note = function(time, duration) {
 
 Model.Score = function() {
     this.notes = [];
+};
 
-    this.play = function(context) {
-        var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
-        var data = buffer.getChannelData(0);
+Model.Score.prototype.play = function(context) {
+    var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
+    var data = buffer.getChannelData(0);
 
-        this.notes.forEach(function(note) {
-            var start = note.start * context.sampleRate;
-            var end = note.end * context.sampleRate;
+    this.notes.forEach(function(note) {
+        var start = note.start * context.sampleRate;
+        var end = note.end * context.sampleRate;
 
-            for (var i = start; i < end; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-        });
+        for (var i = start; i < end; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+    });
 
-        var source = context.createBufferSource();
-        source.buffer = buffer;
-        source.connect(context.destination);
-        source.start();
-    };
+    var source = context.createBufferSource();
+    source.buffer = buffer;
+    source.connect(context.destination);
+    source.start();
 };
 
 var score_source = document.getElementById('score').value
