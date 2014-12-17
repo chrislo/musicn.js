@@ -50,7 +50,10 @@ end_instrument
   = operation:"END" " " ";\n" { return {operation: operation }; }
 
 generated_function
-  = operation:"GEN" " " time:variable subroutine_number:variable function_number:variable params:variable* ";\n" { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, params:params }; }
+  = operation:"GEN" " " time:variable subroutine_number:variable function_number:variable points:point* ";\n" { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, points:points }; }
+
+point
+  = amplitude:variable index:variable { return {amplitude: parseFloat(amplitude), index: parseInt(index)}; }
 
 note
   = operation:"NOT" " " time:variable instrument_number:variable duration:variable params:variable* ";\n" { return { operation: operation, time: parseFloat(time), instrument_number: parseInt(instrument_number), duration: parseFloat(duration), params:params }; }
