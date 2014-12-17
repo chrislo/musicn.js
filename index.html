@@ -23,7 +23,7 @@ TER 8.00 ;
 </textarea>
   <textarea id="grammar">
 score
-  = data_statements:data_statement* { return {data_statements:data_statements}; }
+  = data_statements:data_statement* { return new Score(data_statements); }
 
 data_statement
   = data_statement: (generated_function
@@ -32,35 +32,35 @@ data_statement
   / instrument_definition) eol { return data_statement; }
 
 instrument_definition
-  = begin_instrument:begin_instrument eol unit_generators:unit_generator_data_statement* end_instrument { return {time: begin_instrument.time, number: begin_instrument.number, unit_generators: unit_generators}; }
+  = begin_instrument:begin_instrument eol unit_generators:unit_generator_data_statement* end_instrument { return new InstrumentDefinition(begin_instrument.time, begin_instrument.number, unit_generators); }
 
 unit_generator_data_statement
   = unit_generator: (oscillator
   / output) eol { return unit_generator; }
 
 terminator
-  = operation:"TER" whitespace time:variable  { return {operation: operation, time:parseFloat(time)}; }
+  = "TER" whitespace time:variable  { return new Terminator(parseFloat(time)); }
 
 begin_instrument
-  = operation:"INS" whitespace time:variable number:variable  { return {operation: operation, time:parseFloat(time), number:parseInt(number)}; }
+  = "INS" whitespace time:variable number:variable  { return {time:parseFloat(time), number:parseInt(number)}; }
 
 oscillator
-  = operation:"OSC" whitespace amplitude:variable frequency:variable output:variable stored_function:variable initial_value:variable  { return {operation: operation, amplitude: amplitude, frequency: frequency, output: output, stored_function: stored_function, initial_value: initial_value }; }
+  = "OSC" whitespace amplitude:variable frequency:variable output:variable stored_function:variable initial_value:variable  { return new Oscillator(amplitude, frequency, output, stored_function, initial_value); }
 
 output
-  = operation:"OUT" whitespace input:variable output:variable  { return {operation: operation, input: input, output: output }; }
+  = "OUT" whitespace input:variable output:variable  { return new Output(input, output); }
 
 end_instrument
-  = operation:"END" whitespace  { return {operation: operation }; }
+  = "END" whitespace
 
 generated_function
-  = operation:"GEN" whitespace time:variable subroutine_number:variable function_number:variable points:point*  { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, points:points }; }
+  = "GEN" whitespace time:variable subroutine_number:variable function_number:variable points:point*  { return new GeneratedFunction(parseFloat(time), subroutine_number, function_number, points); }
 
 point
   = amplitude:variable index:variable { return {amplitude: parseFloat(amplitude), index: parseInt(index)}; }
 
 note
-  = operation:"NOT" whitespace time:variable instrument_number:variable duration:variable params:variable*  { return { operation: operation, time: parseFloat(time), instrument_number: parseInt(instrument_number), duration: parseFloat(duration), params:params }; }
+  = "NOT" whitespace time:variable instrument_number:variable duration:variable params:variable* { return new Note(parseFloat(time), parseInt(instrument_number), parseFloat(duration), params); }
 
 variable
   = letters:[^ ;]+ whitespace* { return letters.join(""); }
