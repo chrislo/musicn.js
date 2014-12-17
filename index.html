@@ -23,16 +23,16 @@ TER 8.00 ;
 </textarea>
   <textarea id="grammar">
 score
-  = line*
+  = lines:line* { return {lines: lines}; }
 
 line
-  = operation " " (variable " ")* ";\n"
+  = operation:operation variables:variable* ";\n" { return {operation: operation, variables: variables}; }
 
 operation
-  = [A-Z][A-Z][A-Z]
+  = letters:([A-Z][A-Z][A-Z]) " "* { return letters.join(""); }
 
 variable
-  = [^ ;]*
+  = letters:[^ ;]+ " "* { return letters.join(""); }
 
 </textarea>
   <script src="musicn.js"></script>
