@@ -23,16 +23,20 @@ TER 8.00 ;
 </textarea>
   <textarea id="grammar">
 score
-  = lines:line* { return {lines: lines}; }
+  = data_statements:data_statement* { return {data_statements:data_statements}; }
 
-line
-  = (terminator
-  / begin_instrument
-  / oscillator
-  / output
-  / end_instrument
-  / generated_function
-  / note) eol
+data_statement
+  = data_statement: (generated_function
+  / note
+  / terminator
+  / instrument_definition) eol { return data_statement; }
+
+instrument_definition
+  = begin_instrument:begin_instrument eol unit_generators:unit_generator_data_statement* end_instrument { return {time: begin_instrument.time, number: begin_instrument.number, unit_generators: unit_generators}; }
+
+unit_generator_data_statement
+  = unit_generator: (oscillator
+  / output) eol { return unit_generator; }
 
 terminator
   = operation:"TER" whitespace time:variable  { return {operation: operation, time:parseFloat(time)}; }
