@@ -39,22 +39,22 @@ AST.Note = function(time, instrument_number, duration, params) {
 
 AST.Terminator = function(time) {
     this.time = time;
-
-    this.add_to_score = function(score) {
-        score.duration = this.time;
-    }
 };
+
+AST.Terminator.prototype.add_to_score = function(score) {
+    score.duration = this.time;
+}
 
 AST.Score = function(data_statements) {
     this.data_statements = data_statements;
+};
 
-    this.to_score = function() {
-        var score = new Model.Score();
-        data_statements.forEach(function(statement) {
-            if(statement.add_to_score) { statement.add_to_score(score) };
-        });
-        return score;
-    };
+AST.Score.prototype.to_score = function() {
+    var score = new Model.Score();
+    this.data_statements.forEach(function(statement) {
+        if(statement.add_to_score) { statement.add_to_score(score) };
+    });
+    return score;
 };
 
 var Model = {};
