@@ -33,7 +33,8 @@ AST.Note = function(time, instrument_number, duration, params) {
     this.params = params;
 
     this.add_to_score = function(score) {
-        score.notes.push(new Model.Note(time, duration));
+        var amplitude = parseInt(this.params[0]);
+        score.notes.push(new Model.Note(time, duration, amplitude));
     }
 };
 
@@ -58,25 +59,27 @@ AST.Score.prototype.to_score = function() {
 };
 
 var Model = {};
-Model.Note = function(time, duration) {
+Model.Note = function(time, duration, amplitude) {
     this.start = time;
     this.end = this.start + duration;
+    this.amplitude = amplitude;
 };
 
 Model.Score = function() {
     this.notes = [];
 };
 
-Model.Score.prototype.play = function(context) {
+Model.Score.prototype.play = function(context, maxAmplitude) {
     var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
     var data = buffer.getChannelData(0);
 
     this.notes.forEach(function(note) {
         var start = note.start * context.sampleRate;
         var end = note.end * context.sampleRate;
+        var amplitude = note.amplitude / maxAmplitude
 
         for (var i = start; i < end; i++) {
-            data[i] = Math.random() * 2 - 1;
+            data[i] = (Math.random() * 2 - 1) * amplitude;
         }
     });
 
@@ -97,4 +100,4 @@ var score = ast.to_score();
 console.log(score);
 
 var context = new AudioContext();
-score.play(context);
+score.play(context, 2047);
