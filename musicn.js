@@ -74,16 +74,16 @@ Model.Score = function() {
 Model.Instrument = function() {
 }
 
-Model.Instrument.prototype.to_data = function(note, context, maxAmplitude, blockSize, rate) {
-    var note_buffer = context.createBuffer(1, (note.end - note.start) * context.sampleRate, context.sampleRate);
-    var note_data = note_buffer.getChannelData(0);
+Model.Instrument.prototype.to_data = function(note, sampleRate, maxAmplitude, blockSize, rate) {
+    var size = (note.end - note.start) * sampleRate;
+    var note_data = new Float32Array(Math.round(size));
 
     var amplitude = note.amplitude / maxAmplitude;
     var frequency = note.frequency / (blockSize/rate);
     var angular_frequency = 2*Math.PI*frequency;
 
-    for (var i = 0; i < note_buffer.length; i++) {
-        var t = i / context.sampleRate;
+    for (var i = 0; i < note_data.length; i++) {
+        var t = i / sampleRate;
         note_data[i] = Math.sin(t*angular_frequency) * amplitude;
     }
 
@@ -94,25 +94,21 @@ Model.Score.prototype.getInstrument = function(instrument_number) {
     return new Model.Instrument();
 };
 
-Model.Score.prototype.play = function(context, maxAmplitude, blockSize, rate) {
-    var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
-    var data = buffer.getChannelData(0);
+Model.Score.prototype.to_data = function(sampleRate, maxAmplitude, blockSize, rate) {
+    var data = new Float32Array(this.duration * sampleRate);
 
     this.notes.forEach(function(note) {
         var instrument = this.getInstrument(note.instrument_number);
-        var note_data = instrument.to_data(note, context, maxAmplitude, blockSize, rate);
+        var note_data = instrument.to_data(note, sampleRate, maxAmplitude, blockSize, rate);
 
-        var start = note.start * context.sampleRate;
+        var start = note.start * sampleRate;
 
         for (var i = 0; i < note_data.length; i++) {
             data[start+i] += note_data[i];
         };
     }, this);
 
-    var source = context.createBufferSource();
-    source.buffer = buffer;
-    source.connect(context.destination);
-    source.start();
+    return data;
 };
 
 var score_source = document.getElementById('score').value
@@ -126,4 +122,11 @@ var score = ast.to_score();
 console.log(score);
 
 var context = new AudioContext();
-score.play(context, 2047, 511, 20000);
+var data = score.to_data(context.sampleRate, 2047, 511, 20000);
+var buffer = context.createBuffer(1, data.length, context.sampleRate);
+buffer.copyToChannel(data, 0);
+
+var source = context.createBufferSource();
+source.buffer = buffer;
+source.connect(context.destination);
+source.start();
