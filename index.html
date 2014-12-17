@@ -26,41 +26,46 @@ score
   = lines:line* { return {lines: lines}; }
 
 line
-  = terminator
+  = (terminator
   / begin_instrument
   / oscillator
   / output
   / end_instrument
   / generated_function
-  / note
+  / note) eol
 
 terminator
-  = operation:"TER" " " time:variable ";\n" { return {operation: operation, time:parseFloat(time)}; }
+  = operation:"TER" whitespace time:variable  { return {operation: operation, time:parseFloat(time)}; }
 
 begin_instrument
-  = operation:"INS" " " time:variable number:variable ";\n" { return {operation: operation, time:parseFloat(time), number:parseInt(number)}; }
+  = operation:"INS" whitespace time:variable number:variable  { return {operation: operation, time:parseFloat(time), number:parseInt(number)}; }
 
 oscillator
-  = operation:"OSC" " " amplitude:variable frequency:variable output:variable stored_function:variable initial_value:variable ";\n" { return {operation: operation, amplitude: amplitude, frequency: frequency, output: output, stored_function: stored_function, initial_value: initial_value }; }
+  = operation:"OSC" whitespace amplitude:variable frequency:variable output:variable stored_function:variable initial_value:variable  { return {operation: operation, amplitude: amplitude, frequency: frequency, output: output, stored_function: stored_function, initial_value: initial_value }; }
 
 output
-  = operation:"OUT" " " input:variable output:variable ";\n" { return {operation: operation, input: input, output: output }; }
+  = operation:"OUT" whitespace input:variable output:variable  { return {operation: operation, input: input, output: output }; }
 
 end_instrument
-  = operation:"END" " " ";\n" { return {operation: operation }; }
+  = operation:"END" whitespace  { return {operation: operation }; }
 
 generated_function
-  = operation:"GEN" " " time:variable subroutine_number:variable function_number:variable points:point* ";\n" { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, points:points }; }
+  = operation:"GEN" whitespace time:variable subroutine_number:variable function_number:variable points:point*  { return { operation: operation, time: parseFloat(time), subroutine_number: subroutine_number, function_number: function_number, points:points }; }
 
 point
   = amplitude:variable index:variable { return {amplitude: parseFloat(amplitude), index: parseInt(index)}; }
 
 note
-  = operation:"NOT" " " time:variable instrument_number:variable duration:variable params:variable* ";\n" { return { operation: operation, time: parseFloat(time), instrument_number: parseInt(instrument_number), duration: parseFloat(duration), params:params }; }
+  = operation:"NOT" whitespace time:variable instrument_number:variable duration:variable params:variable*  { return { operation: operation, time: parseFloat(time), instrument_number: parseInt(instrument_number), duration: parseFloat(duration), params:params }; }
 
 variable
-  = letters:[^ ;]+ " "* { return letters.join(""); }
+  = letters:[^ ;]+ whitespace* { return letters.join(""); }
 
+whitespace
+  = " "
+
+eol
+  = ";\n"
 </textarea>
   <script src="musicn.js"></script>
 
