@@ -71,22 +71,43 @@ Model.Score = function() {
     this.notes = [];
 };
 
+Model.Instrument = function() {
+}
+
+Model.Instrument.prototype.to_data = function(note, context, maxAmplitude, blockSize, rate) {
+    var note_buffer = context.createBuffer(1, (note.end - note.start) * context.sampleRate, context.sampleRate);
+    var note_data = note_buffer.getChannelData(0);
+
+    var amplitude = note.amplitude / maxAmplitude;
+    var frequency = note.frequency / (blockSize/rate);
+    var angular_frequency = 2*Math.PI*frequency;
+
+    for (var i = 0; i < note_buffer.length; i++) {
+        var t = i / context.sampleRate;
+        note_data[i] = Math.sin(t*angular_frequency) * amplitude;
+    }
+
+    return note_data;
+}
+
+Model.Score.prototype.getInstrument = function(instrument_number) {
+    return new Model.Instrument();
+};
+
 Model.Score.prototype.play = function(context, maxAmplitude, blockSize, rate) {
     var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
     var data = buffer.getChannelData(0);
 
     this.notes.forEach(function(note) {
-        var start = note.start * context.sampleRate;
-        var end = note.end * context.sampleRate;
-        var amplitude = note.amplitude / maxAmplitude;
-        var frequency = note.frequency / (blockSize/rate);
-        var angular_frequency = 2*Math.PI*frequency;
+        var instrument = this.getInstrument(note.instrument_number);
+        var note_data = instrument.to_data(note, context, maxAmplitude, blockSize, rate);
 
-        for (var i = start; i < end; i++) {
-            var t = i / context.sampleRate;
-            data[i] = Math.sin(t*angular_frequency) * amplitude;
-        }
-    });
+        var start = note.start * context.sampleRate;
+
+        for (var i = 0; i < note_data.length; i++) {
+            data[start+i] += note_data[i];
+        };
+    }, this);
 
     var source = context.createBufferSource();
     source.buffer = buffer;
