@@ -26,7 +26,14 @@ score
   = line*
 
 line
-  = [^;]* ";\n"
+  = operation " " (variable " ")* ";\n"
+
+operation
+  = [A-Z][A-Z][A-Z]
+
+variable
+  = [^ ;]*
+
 </textarea>
   <script src="musicn.js"></script>
 
