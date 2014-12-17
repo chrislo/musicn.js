@@ -31,11 +31,12 @@ AST.Note = function(time, instrument_number, duration, params) {
     this.instrument_number = instrument_number;
     this.duration = duration;
     this.params = params;
+};
 
-    this.add_to_score = function(score) {
-        var amplitude = parseInt(this.params[0]);
-        score.notes.push(new Model.Note(time, duration, amplitude));
-    }
+AST.Note.prototype.add_to_score = function(score) {
+    var amplitude = parseInt(this.params[0]);
+    var frequency = parseFloat(this.params[1]);
+    score.notes.push(new Model.Note(this.time, this.duration, amplitude, frequency));
 };
 
 AST.Terminator = function(time) {
@@ -59,27 +60,31 @@ AST.Score.prototype.to_score = function() {
 };
 
 var Model = {};
-Model.Note = function(time, duration, amplitude) {
+Model.Note = function(time, duration, amplitude, frequency) {
     this.start = time;
     this.end = this.start + duration;
     this.amplitude = amplitude;
+    this.frequency = frequency;
 };
 
 Model.Score = function() {
     this.notes = [];
 };
 
-Model.Score.prototype.play = function(context, maxAmplitude) {
+Model.Score.prototype.play = function(context, maxAmplitude, blockSize, rate) {
     var buffer = context.createBuffer(1, this.duration * context.sampleRate, context.sampleRate);
     var data = buffer.getChannelData(0);
 
     this.notes.forEach(function(note) {
         var start = note.start * context.sampleRate;
         var end = note.end * context.sampleRate;
-        var amplitude = note.amplitude / maxAmplitude
+        var amplitude = note.amplitude / maxAmplitude;
+        var frequency = note.frequency / (blockSize/rate);
+        var angular_frequency = 2*Math.PI*frequency;
 
         for (var i = start; i < end; i++) {
-            data[i] = (Math.random() * 2 - 1) * amplitude;
+            var t = i / context.sampleRate;
+            data[i] = Math.sin(t*angular_frequency) * amplitude;
         }
     });
 
@@ -100,4 +105,4 @@ var score = ast.to_score();
 console.log(score);
 
 var context = new AudioContext();
-score.play(context, 2047);
+score.play(context, 2047, 511, 20000);
