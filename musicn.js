@@ -1,4 +1,4 @@
-var AST = {}
+var AST = {};
 
 AST.InstrumentDefinition = function(time, number, unit_generators) {
     this.time = time;
@@ -72,7 +72,7 @@ Model.Score = function() {
 };
 
 Model.Instrument = function() {
-}
+};
 
 Model.Instrument.prototype.to_data = function(note, sampleRate, maxAmplitude, blockSize, rate) {
     var size = (note.end - note.start) * sampleRate;
@@ -88,7 +88,7 @@ Model.Instrument.prototype.to_data = function(note, sampleRate, maxAmplitude, bl
     }
 
     return note_data;
-}
+};
 
 Model.Score.prototype.getInstrument = function(instrument_number) {
     return new Model.Instrument();
@@ -111,8 +111,8 @@ Model.Score.prototype.to_data = function(sampleRate, maxAmplitude, blockSize, ra
     return data;
 };
 
-var score_source = document.getElementById('score').value
-var grammar = document.getElementById('grammar').value
+var score_source = document.getElementById('score').value;
+var grammar = document.getElementById('grammar').value;
 
 var parser = PEG.buildParser(grammar);
 var ast = parser.parse(score_source);
