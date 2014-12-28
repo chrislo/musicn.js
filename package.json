@@ -1,0 +1,10 @@
+{
+  "name": "musicn.js",
+  "version": "1.0.0",
+  "description": "An implementation of the Music V system in JavaScript",
+  "main": "musicn.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "author": "Chris Lowis",
+  "license": "MIT"
+}
