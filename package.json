@@ -6,7 +6,9 @@
   "dependencies": {
     "jstest": "^1.0.5"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "pegjs": "^0.8.0"
+  },
   "author": "Chris Lowis",
   "license": "MIT"
 }
