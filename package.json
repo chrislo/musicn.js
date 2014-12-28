@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "An implementation of the Music V system in JavaScript",
   "main": "musicn.js",
-  "dependencies": {},
+  "dependencies": {
+    "jstest": "^1.0.5"
+  },
   "devDependencies": {},
   "author": "Chris Lowis",
   "license": "MIT"
