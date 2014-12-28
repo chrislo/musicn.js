@@ -7,10 +7,12 @@
     "jstest": "^1.0.5"
   },
   "devDependencies": {
+    "browserify": "^8.0.2",
     "pegjs": "^0.8.0"
   },
   "scripts": {
     "test": "node test.js",
+    "build": "browserify musicn.js -o app/musicn.bundle.js"
   },
   "author": "Chris Lowis",
   "license": "MIT"
