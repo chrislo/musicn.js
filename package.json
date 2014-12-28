@@ -9,6 +9,9 @@
   "devDependencies": {
     "pegjs": "^0.8.0"
   },
+  "scripts": {
+    "test": "node test.js",
+  },
   "author": "Chris Lowis",
   "license": "MIT"
 }
