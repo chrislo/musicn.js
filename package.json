@@ -4,7 +4,8 @@
   "description": "An implementation of the Music V system in JavaScript",
   "main": "musicn.js",
   "dependencies": {
-    "jstest": "^1.0.5"
+    "jstest": "^1.0.5",
+    "pegjs-otf": "^0.9.0"
   },
   "devDependencies": {
     "browserify": "^8.0.2",
@@ -12,7 +13,7 @@
   },
   "scripts": {
     "test": "node test.js",
-    "build": "browserify musicn.js -o app/musicn.bundle.js"
+    "build": "browserify -t pegjs-otf/transform -o app/musicn.bundle.js musicn.js"
   },
   "author": "Chris Lowis",
   "license": "MIT"
