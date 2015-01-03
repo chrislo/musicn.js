@@ -3,14 +3,16 @@ var parser = require('./lib/musicn_parser.js')
 var Model = require('./lib/model.js')
 
 JS.Test.describe("compiling a simple score", function() { with(this) {
-  var score_source = "TER 8.00 ;\n"
+  var score_source = "INS 0 1 ;\nOSC P5 P6 B2 F2 P30 ;\nOUT B2 B1 ;\nEND ;\nNOT 0 1 1.00 125 8.45 ;\nTER 1.00 ;\n"
 
-  it("generates 8 seconds of audio", function() { with(this) {
+  it("generates 1 second of audio", function() { with(this) {
     var ast = parser.parse(score_source);
     var score = ast.to_score();
     var data = score.to_data(44100);
 
-    assertEqual(44100 * 8, data.length);
+    assertEqual(44100 * 1, data.length);
+  }})
+}})
   }})
 }})
 
