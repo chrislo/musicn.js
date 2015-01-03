@@ -14,6 +14,20 @@ JS.Test.describe("compiling a simple score", function() { with(this) {
   }})
 }})
 
+JS.Test.describe("parser", function() { with(this) {
+  it("parses stored function definitions", function() { with(this) {
+    var ast = parser.parse("GEN 0 1 2 0 0 .999 50 .999 205 -.999 306 -.999 461 0 511 ;\n");
+    var statement = ast.data_statements[0]
+
+    assertEqual(0, statement.time);
+    assertEqual('1', statement.subroutine_number);
+    assertEqual('2', statement.function_number);
+
+    assertEqual(6, statement.points.length);
+    assertEqual({amplitude: 0, index: 0}, statement.points[0]);
+  }})
+}})
+
 JS.Test.describe("Model.Note", function() { with(this) {
   it("normalises the amplitude by the scores max amplitude", function() { with(this) {
     var score = new Model.Score({maxAmplitude: 5});
