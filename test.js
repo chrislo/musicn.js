@@ -13,6 +13,15 @@ JS.Test.describe("compiling a simple score", function() { with(this) {
     assertEqual(44100 * 1, data.length);
   }})
 }})
+
+JS.Test.describe("instrument definitions", function() { with(this) {
+  it("adds unit generators to the instrument model", function() { with(this) {
+    var ast = parser.parse("INS 0 1 ;\nOSC P5 P6 B2 F2 P30 ;\nOUT B2 B1 ;\nEND ;\n");
+    var score = ast.to_score();
+
+    var instrument = score.getInstrument(1);
+
+    assertEqual(2, instrument.unit_generators.length);
   }})
 }})
 
@@ -33,14 +42,14 @@ JS.Test.describe("parser", function() { with(this) {
 JS.Test.describe("Model.Note", function() { with(this) {
   it("normalises the amplitude by the scores max amplitude", function() { with(this) {
     var score = new Model.Score({maxAmplitude: 5});
-    var note = new Model.Note(1, 1, 2, 400, score);
+    var note = new Model.Note(1, 1, 1, 2, 400, score);
 
     assertEqual(2/5, note.amplitude);
   }})
 
   it("normalises the frequency by the scores max frequency", function() { with(this) {
     var score = new Model.Score({blockSize: 511, rate: 20000});
-    var note = new Model.Note(1, 1, 2, 0.02555, score);
+    var note = new Model.Note(1, 1, 1, 2, 0.02555, score);
 
     assertEqual(1, note.frequency);
   }})
