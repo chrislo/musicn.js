@@ -5,7 +5,7 @@ var score_source = document.getElementById('score').value;
 var ast = parser.parse(score_source);
 console.log(ast);
 
-var score = ast.to_score({maxAmplitude: 2047, blockSize: 511, rate: 20000});
+var score = ast.to_score({maxAmplitude: 2047, blockSize: 512, rate: 20000});
 console.log(score);
 
 var context = new AudioContext();
